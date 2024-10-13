@@ -76,6 +76,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.regex.Pattern;
 
+import org.keycloak.crypto.KeyType;
 import org.keycloak.models.AccountRoles;
 import org.keycloak.models.GroupProviderFactory;
 import org.keycloak.provider.Provider;
@@ -113,9 +114,13 @@ public final class KeycloakModelUtils {
     public static PublicKey getPublicKey(String publicKeyPem) {
         if (publicKeyPem != null) {
             try {
-                return PemUtils.decodePublicKey(publicKeyPem);
+                return PemUtils.decodePublicKey(publicKeyPem, KeyType.EC);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                try {
+                    return PemUtils.decodePublicKey(publicKeyPem);
+                } catch (Exception e2) {
+                    throw new RuntimeException(e2);
+                }
             }
         } else {
             return null;
